@@ -1,249 +1,278 @@
 /*
-  Filename   : Lexer.cc
-  Author     : 
-  Course     : CSCI 435
-  Assignment : Lab 5 - Lexing With Class
+    Filename    : Lexer.cc
+    Author      : Lauren Deaver
+    Course      : CSCI 435
+    Assignment  : Lab 5 - Lexing with Class
 */
 
-/***********************************************************************/
+/***********************/
 // System includes
 
 #include <cstdlib>
+#include <cstdio>
 #include <iostream>
 #include <string>
-#include <fstream>
 
-/***********************************************************************/
+/***********************/
 // Local includes
 
 #include "Lexer.h"
 
-/***********************************************************************/
+/***********************/
 // Using declarations
 
 using std::cout;
 using std::endl;
 using std::string;
-using std::stoi;
+using std::stoi; 
 
-/***********************************************************************/
-
+/***********************/
 Lexer::Lexer (FILE* srcFile)
 {
-    m_srcFile = srcFile;
-    m_columnNum = 1;
     m_lineNum = 1;
+    m_columnNum = 1;
+    m_srcFile = srcFile;
+    //fopen(m_srcFile, "r");
 }
 
 Lexer::~Lexer ()
 {
-    std::fclose (m_srcFile);
+    fclose(m_srcFile);
 }
 
 int
-Lexer::getLineNum ()
+Lexer::getChar()
+{
+    ++m_columnNum;
+    return fgetc(m_srcFile);
+}
+
+void
+Lexer::ungetChar(int c)
+{
+    --m_columnNum;
+    ungetc(c, m_srcFile);
+}
+
+int
+Lexer::getLineNum()
 {
     return m_lineNum;
 }
 
 int
-Lexer::getColumnNum ()
+Lexer::getColumnNum()
 {
     return m_columnNum;
 }
 
-int
-Lexer::getChar ()
-{
-    fgetc (m_srcFile);
-}
-
-void
-Lexer::ungetChar (int c)
-{
-    ungetc (c, m_srcFile);
-}
-
 Token
-Lexer::lexId ()
+Lexer::lexId()
 {
     std::string id;
-    std::string keywords[6] = {"if", "while", "int", "void", "return"};
-    char c;
-    while (isalpha (c))
+    char c = getChar();
+    while (isalpha(c))
     {
-        id.push_back (c);
-        c = getChar ();
+        id.push_back(c);
+        c = getChar();
     }
-
-    if (!id.compare ("if"))
+    ungetChar(c);
+    if (!id.compare("if"))
     {
-        m_columnNum += id.length ();
         return Token (IF, "if");
     }
-    else if (!id.compare ("while"))
+    else if (!id.compare("else"))
     {
-        m_columnNum += id.length ();
-        return Token (WHILE, "while");
+        return Token (ELSE, "else"); 
     }
-    else if (!id.compare ("int"))
+    else if (!id.compare("int"))
     {
-        m_columnNum += id.length ();
-        return Token (INT, "int");
+        return Token (INT, "int"); 
     }
-    else if (!id.compare ("void"))
+    else if (!id.compare("void"))
     {
-        m_columnNum += id.length ();
-        return Token (VOID, "void");
+        return Token (VOID, "void"); 
     }
-    else if (!id.compare ("return"))
+    else if (!id.compare("return"))
     {
-        m_columnNum += id.length ();
-        return Token (RETURN, "return");
+        return Token (RETURN, "return"); 
+    }
+    else if (!id.compare("while"))
+    {
+        return Token (WHILE, "while"); 
     }
     else
     {
-        m_columnNum += id.length ();
         return Token (ID, id);
     }
-    /*
-    * do a loop and accumuluate all letters
-    * see if its a keyword
-    * store letters in a string
-    * keep adding to the end since std::string is essentially a vector
-    */
+/* Say you want to lex an ID. 
+
+lexId (…)
+{
+  String id; 
+  While (…)
+    Append to id
+    Get a new char
+}*/
+
+    // do the loop and accumulate all the letters
+    // see if its a keyword
+    // can store letters in a string 
+    //since std::string is vector in disguise can keep adding to the end
 }
 
 Token
-Lexer::lexNum ()
+Lexer::lexNum()
 {
     std::string strNum;
-    char c;
-    while (isdigit (c))
+    char c = getChar();
+    while (isdigit(c))
     {
-        strNum.push_back (c);
-        c = getChar ();
+        strNum.push_back(c);
+        c = getChar();
     }
-    int intNum = stoi (strNum);
+    ungetChar(c);
+    int intNum = stoi(strNum);
     return Token (NUM, strNum, intNum);
-    //lexId but changes the string to an int
+    //similar to lexId but change the string to int
 }
 
 Token
-Lexer::getToken () 
-{   
-  while (true)
-  {
-    char c = getChar ();
-
-    if (isalpha (c))
-      return lexId ();
-
-    if (isdigit (c))
-      return lexNum ();
-
-    switch (c)
+Lexer::getToken()
+{
+    while (true)
     {
-      case '\n':
-        ++m_lineNum;
-        m_columnNum = 1;
-        break;
-
-      case EOF:
-        return Token (END_OF_FILE);
-
-    // Operators
-      case '+':
-        return Token (PLUS, "+");
-      // c = getChar ();
-      // if (c != '+')
-      // {
-      //   ungetChar (c);
-      //   return Token (PLUS, "+");
-      // }
-      // return Token (INCREMENT, "++");  
-
-      case '*':
-        return Token (TIMES, "*");    
-
-      case '<':
-        c = getChar ();
-        if (c != '=')
+        char c = getChar();
+        if (isalpha (c))
         {
-          ungetChar (c);
-          return Token (LT, "<");
+            ungetChar(c);
+            return lexId();
         }
-        return Token (LTE, "<=");
-
-      case '>':
-        c = getChar ();
-        if (c != '=')
+        if (isdigit (c))
         {
-          ungetChar (c);
-          return Token (GT, ">");
+            ungetChar(c);
+            return lexNum();
         }
-        return Token (GTE, ">=");
-
-      case '=':
-        c = getChar ();
-        if (c != '=')
+        switch (c)
         {
-          ungetChar (c);
-          return Token (ASSIGN, "=");
-        }
-        return Token (EQ, "==");
-
-      case '!':
-        c = getChar ();
-        if (c != '=')
-        {
-          ungetChar (c);
-          m_columnNum++;
-          return Token (ERROR, "!");
-        }
-        return Token (NEQ, "!=");
-
-    // Punctuators
-      case ';':
-        return Token (SEMI, ";");
+            case '\n':
+                ++m_lineNum;
+                m_columnNum = 1;
+                break;
             
-      case ',':
-        return Token (COMMA, ",");
-
-      case '(':
-        return Token (LPAREN, "(");    
-
-      case ')':
-        return Token (RPAREN, ")");
-
-      case '[':
-        return Token (LBRACK, "[");    
-
-      case ']':
-        return Token (RBRACK, "]");   
-
-      case '{':
-        return Token (LBRACE, "{");    
-
-      case '}':
-        return Token (RBRACE, "}");  
+            case ' ':
+                break;
             
-      case '/':
-        c = getChar ();
-        if(c != '/')
-        {
-            ungetChar (c);
-            m_columnNum++;
-            return Token (ERROR, "/");
-        }
-        return Token (COMMENT, "//");
+            case '\t':
+                break;
 
-      default:
-        c = getChar ();
-        std::string str(1, c);
-        m_columnNum++;
-        return Token (ERROR, str);
+            case EOF:
+                return Token (END_OF_FILE);
+
+            //Operators
+            case '+':
+                return Token (PLUS, "+");
+            /*if (c != '+')
+            {
+                ungetChar(c);
+                return Token (PLUS, "+");
+            }
+            return Token (INCREMENT, "++");*/
+            case '-':
+                return Token (MINUS, "-");
+
+            case '*':
+                return Token (TIMES, "*");
+
+            case '/':
+                c = getChar();
+                if (c == '*')
+                {
+                    while(true)
+                    {
+                        c = getChar();
+                        if (c == '*')
+                        {
+                            c = getChar();
+                            if (c == '/')
+                            {
+                                break;
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    ungetChar(c);
+                    return Token (DIVIDE, "/");
+                }
+
+            case '<':
+                c = getChar();
+                if (c != '=')
+                {
+                    ungetChar(c);
+                    return Token (LT, "<");
+                }
+                return Token (LTE, "<=");
+
+            case '>':
+                c = getChar();
+                if (c != '=')
+                {
+                    ungetChar(c);
+                    return Token (GT, ">");
+                }
+                return Token (GTE, ">=");
+
+            case '=':
+                c = getChar();
+                if (c != '=')
+                {
+                    ungetChar(c);
+                    return Token (ASSIGN, "=");
+                }
+                return Token (EQ, "==");
+            
+            case '!':
+                c = getChar();
+                if (c != '=')
+                {
+                    ungetChar(c);
+                    return Token (ERROR, "!");
+                }
+                return Token (NEQ, "!=");
+
+            //Puncuators
+            case ';':
+                return Token (SEMI, ";");
+            
+            case ',':
+                return Token (COMMA, ",");
+
+            case '(':
+                return Token (LPAREN, "(");
+
+            case ')':
+                return Token (RPAREN, ")");
+
+            case '[':
+                return Token (LBRACK, "[");
+            
+            case ']':
+                return Token (RBRACK, "]");
+
+            case '{':
+                return Token (LBRACE, "{");
+
+            case '}':
+                return Token (RBRACE, "}");
+
+            default:
+                std::string err;
+                err.push_back(c);
+                return Token (ERROR, err);
+        }
     }
-  }
 }
 
