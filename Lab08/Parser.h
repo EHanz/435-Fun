@@ -3,7 +3,8 @@
 
 #include <iostream>
 #include <string>
-#include <stdio>
+#include <cstdlib>
+#include <cctype>
 #include "Lexer.h"
 
 class Parser
@@ -14,7 +15,7 @@ class Parser
         ~Parser ();
 
         void
-        match (const string& function, string expectedType);
+        match (const std::string& function, std::string expectedType);
 
         void
         error ();

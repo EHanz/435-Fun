@@ -15,7 +15,8 @@ INCDIRS  :=
 
 # C++ compiler flags
 # Use the first for debugging, the second for release
-CXXFLAGS := -g -Wall -std=c++17 $(INCDIRS)
+# this is the good one for linux CXXFLAGS := -g -Wall -std=c++17 $(INCDIRS)
+CXXFLAGS := -g -Wall -Wno-register -std=gnu++17 $(INCDIRS)
 #CXXFLAGS := -O3 -Wall -std=c++17 $(INCDIRS)
 
 # Linker. For C++ should be $(CXX).
@@ -31,7 +32,9 @@ LDPATHS :=
 EXEC := CMinus
 
 # Libraries used, prefaced with "-l".
-LDLIBS := -lfl
+# LDLIBS := -lfl
+LDLIBS :=  -L/Library/Developer/CommandLineTools/SDKs/MacOSX10.15.sdk/usr/lib -ll
+
 
 #############################################################
 # Rules
@@ -40,7 +43,7 @@ LDLIBS := -lfl
 #         recipe
 #############################################################
 
-$(EXEC) : CMinus.o Lexer.o
+$(EXEC) : CMinus.o Lexer.o Parser.o
 	$(LINK) $(LDFLAGS) $(LDPATHS) $^ -o $@ $(LDLIBS)
 
 %.o : %.cc

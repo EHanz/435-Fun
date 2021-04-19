@@ -12,7 +12,7 @@ Parser::~Parser()
 }
 
 void
-Parser::match (const string& function, string expectedType)
+Parser::match (const std::string& function, std::string expectedType)
 {
     if (m_tokens[m_index].lexeme == expectedType)
     {
