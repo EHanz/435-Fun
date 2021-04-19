@@ -40,13 +40,15 @@ struct Token
 {
     Token (TokenType pType = END_OF_FILE,
             std::string pLexeme = "",
-            int pNumber = 0)
-        : type (pType), lexeme (pLexeme), number (pNumber)
+            int pNumber = 0, int lineNo = 1, int columnNo = 1)
+        : type (pType), lexeme (pLexeme), number (pNumber), line (lineNo), column (columnNo)
     { }
 
     TokenType   type;
     std::string lexeme;
     int         number;
+    int         line;
+    int         column;
 };
 
 /***********************/
@@ -72,6 +74,9 @@ public:
 
     Token
     lexNum();
+
+    std::vector<Token>
+    tokenize();
 
 private:
     int

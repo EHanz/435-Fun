@@ -66,6 +66,18 @@ Lexer::getColumnNum()
     return m_columnNum;
 }
 
+std::vector<Token>
+Lexer::tokenize()
+{
+    std::vector<Token> tokenVector;
+    int tokenIndex = 0;
+    while(true)
+    {
+        tokenVector[tokenIndex] = getToken();
+        tokenIndex++;
+    }
+}
+
 Token
 Lexer::lexId()
 {
@@ -105,20 +117,6 @@ Lexer::lexId()
     {
         return Token (ID, id);
     }
-/* Say you want to lex an ID. 
-
-lexId (…)
-{
-  String id; 
-  While (…)
-    Append to id
-    Get a new char
-}*/
-
-    // do the loop and accumulate all the letters
-    // see if its a keyword
-    // can store letters in a string 
-    //since std::string is vector in disguise can keep adding to the end
 }
 
 Token
@@ -140,8 +138,8 @@ Lexer::lexNum()
 Token
 Lexer::getToken()
 {
-    while (true)
-    {
+    //while (true)
+    //{
         char c = getChar();
         if (isalpha (c))
         {
@@ -273,6 +271,6 @@ Lexer::getToken()
                 err.push_back(c);
                 return Token (ERROR, err);
         }
-    }
+    //}
 }
 

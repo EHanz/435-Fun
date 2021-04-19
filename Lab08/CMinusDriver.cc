@@ -12,6 +12,7 @@
 #include <string>
 
 #include "Lexer.h"
+#include "Parser.h"
 
 //extern FILE* yyin;
 //extern char* yytext;
@@ -45,6 +46,10 @@ main (int argc, char* argv[])
         "MINUS", "TIMES", "DIVIDE", "LT", "LTE", "GT", "GTE", "EQ", "NEQ", "ASSIGN", "SEMI",
         "COMMA", "LPAREN", "RPAREN", "LBRACK", "RBRACK", "LBRACE", "RBRACE", "ID", "NUM"};
 
+    std::vector<Token> tokenVector = lex.tokenize();
+
+    Parser pars(tokenVector);
+    /*
     Token result;
     int token;
     std::string lexeme;
@@ -78,6 +83,6 @@ main (int argc, char* argv[])
             std::cout << "\n";
         }
     } while (token != 0);
-
+*/
     return EXIT_SUCCESS;
 }
