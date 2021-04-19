@@ -5,6 +5,7 @@
 #include <string>
 #include <cstdlib>
 #include <cctype>
+#include <vector>
 #include "Lexer.h"
 
 class Parser
@@ -15,7 +16,7 @@ class Parser
         ~Parser ();
 
         void
-        match (const std::string& function, std::string expectedType);
+        match (const std::string& function, TokenType expectedType);
 
         void
         error ();
@@ -107,7 +108,7 @@ class Parser
         void
         argList();
 
-    private:
+    public:
         std::vector<Token> m_tokens;
         int m_index;
 };
