@@ -37,25 +37,25 @@ Lexer::Lexer (FILE* srcFile)
 
 Lexer::~Lexer ()
 {
-    fclose(m_srcFile);
+    fclose (m_srcFile);
 }
 
 int
-Lexer::getChar()
+Lexer::getChar ()
 {
     ++m_columnNum;
-    return fgetc(m_srcFile);
+    return fgetc (m_srcFile);
 }
 
 void
-Lexer::ungetChar(int c)
+Lexer::ungetChar (int c)
 {
     --m_columnNum;
-    ungetc(c, m_srcFile);
+    ungetc (c, m_srcFile);
 }
 
 int
-Lexer::getLineNum()
+Lexer::getLineNum ()
 {
     return m_lineNum;
 }
@@ -66,46 +66,46 @@ Lexer::getColumnNum()
     return m_columnNum;
 }
 
-std::vector<Token>
-Lexer::tokenize()
+std::vector <Token>
+Lexer::tokenize ()
 {
     std::vector<Token> tokenVector;
     int tokenIndex = 0;
-    while(true)
+    while (true)
     {
-        tokenVector[tokenIndex] = getToken();
+        tokenVector[tokenIndex] = getToken ();
         tokenIndex++;
     }
 }
 
 Token
-Lexer::lexId()
+Lexer::lexId ()
 {
     std::string id;
-    char c = getChar();
-    while (isalpha(c))
+    char c = getChar ();
+    while (isalpha (c))
     {
-        id.push_back(c);
-        c = getChar();
+        id.push_back (c);
+        c = getChar ();
     }
-    ungetChar(c);
-    if (!id.compare("if"))
+    ungetChar (c);
+    if (!id.compare ("if"))
     {
         return Token (IF, "if");
     }
-    else if (!id.compare("else"))
+    else if (!id.compare ("else"))
     {
         return Token (ELSE, "else"); 
     }
-    else if (!id.compare("int"))
+    else if (!id.compare ("int"))
     {
         return Token (INT, "int"); 
     }
-    else if (!id.compare("void"))
+    else if (!id.compare ("void"))
     {
         return Token (VOID, "void"); 
     }
-    else if (!id.compare("return"))
+    else if (!id.compare ("return"))
     {
         return Token (RETURN, "return"); 
     }
@@ -120,36 +120,36 @@ Lexer::lexId()
 }
 
 Token
-Lexer::lexNum()
+Lexer::lexNum ()
 {
     std::string strNum;
-    char c = getChar();
-    while (isdigit(c))
+    char c = getChar ();
+    while (isdigit (c))
     {
-        strNum.push_back(c);
-        c = getChar();
+        strNum.push_back (c);
+        c = getChar ();
     }
-    ungetChar(c);
-    int intNum = stoi(strNum);
+    ungetChar (c);
+    int intNum = stoi (strNum);
     return Token (NUM, strNum, intNum);
     //similar to lexId but change the string to int
 }
 
 Token
-Lexer::getToken()
+Lexer::getToken ()
 {
     //while (true)
     //{
-        char c = getChar();
+        char c = getChar ();
         if (isalpha (c))
         {
-            ungetChar(c);
-            return lexId();
+            ungetChar (c);
+            return lexId ();
         }
         if (isdigit (c))
         {
-            ungetChar(c);
-            return lexNum();
+            ungetChar (c);
+            return lexNum ();
         }
         switch (c)
         {
@@ -186,12 +186,12 @@ Lexer::getToken()
                 c = getChar();
                 if (c == '*')
                 {
-                    while(true)
+                    while (true)
                     {
-                        c = getChar();
+                        c = getChar ();
                         if (c == '*')
                         {
-                            c = getChar();
+                            c = getChar ();
                             if (c == '/')
                             {
                                 break;
@@ -201,42 +201,42 @@ Lexer::getToken()
                 }
                 else
                 {
-                    ungetChar(c);
+                    ungetChar (c);
                     return Token (DIVIDE, "/");
                 }
 
             case '<':
-                c = getChar();
+                c = getChar ();
                 if (c != '=')
                 {
-                    ungetChar(c);
+                    ungetChar (c);
                     return Token (LT, "<");
                 }
                 return Token (LTE, "<=");
 
             case '>':
-                c = getChar();
+                c = getChar ();
                 if (c != '=')
                 {
-                    ungetChar(c);
+                    ungetChar (c);
                     return Token (GT, ">");
                 }
                 return Token (GTE, ">=");
 
             case '=':
-                c = getChar();
+                c = getChar ();
                 if (c != '=')
                 {
-                    ungetChar(c);
+                    ungetChar (c);
                     return Token (ASSIGN, "=");
                 }
                 return Token (EQ, "==");
             
             case '!':
-                c = getChar();
+                c = getChar ();
                 if (c != '=')
                 {
-                    ungetChar(c);
+                    ungetChar (c);
                     return Token (ERROR, "!");
                 }
                 return Token (NEQ, "!=");
@@ -268,7 +268,7 @@ Lexer::getToken()
 
             default:
                 std::string err;
-                err.push_back(c);
+                err.push_back (c);
                 return Token (ERROR, err);
         }
     //}

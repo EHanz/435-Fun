@@ -19,7 +19,7 @@ class Parser
         match (const std::string& function, TokenType expectedType);
 
         void
-        error ();
+        error (const std::string function, TokenType expectedType);
 
         void
         program();

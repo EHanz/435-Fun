@@ -1,12 +1,12 @@
 #include "Parser.h"
 
-Parser::Parser(std::vector<Token> tokenVector)
+Parser::Parser (std::vector<Token> tokenVector)
 {
     m_tokens = tokenVector;
     m_index = 0;
 }
 
-Parser::~Parser()
+Parser::~Parser ()
 {
 
 }
@@ -26,44 +26,45 @@ Parser::match (const std::string& function, TokenType expectedType)
 }
 
 void
-Parser::error ()
+Parser::error (const std::string function, TokenType expectedType)
 {
-
+    printf ("");
+    printf ("");
 }
 
 //program -> declarationList
 void
-Parser::program()
+Parser::program ()
 {
     while (m_tokens[m_index].type != END_OF_FILE)
     {
-        declarationList();
+        declarationList ();
     }
 }
 
 //declarationList -> declaration {declaration}
 void
-Parser::declarationList()
+Parser::declarationList ()
 {
-    declaration();
+    declaration ();
     while((m_tokens[m_index].type == INT) | (m_tokens[m_index].type == VOID))
     {
-        declaration();
+        declaration ();
     }
 
 }
 
 //declaration -> varDeclaration | funDeclaration
 void
-Parser::declaration()
+Parser::declaration ()
 {
     if (m_tokens[m_index + 2].type == LPAREN)
     {
-        funDeclaration();
+        funDeclaration ();
     }
     else if (m_tokens[m_index + 2].type == LBRACK)
     {
-        varDeclaration();
+        varDeclaration ();
     }
     else
     {
@@ -74,20 +75,20 @@ Parser::declaration()
 
 //varDeclaration -> typeSpecifier 'ID' [ '[' 'NUM' ']' ] ';'
 void
-Parser::varDeclaration()
+Parser::varDeclaration ()
 {
-    typeSpecifier();
-    match("varDeclaration", ID);
+    typeSpecifier ();
+    match ("varDeclaration", ID);
 
     if (m_tokens[m_index].type == LBRACK)
     {
-        match("varDeclaration", LBRACK);
-        match("varDeclaration", NUM);
-        match("varDeclaration", RBRACK);
+        match ("varDeclaration", LBRACK);
+        match ("varDeclaration", NUM);
+        match ("varDeclaration", RBRACK);
     }
     else
     {
-        match("varDeclaration", SEMI);
+        match ("varDeclaration", SEMI);
     }
 
 
@@ -95,15 +96,15 @@ Parser::varDeclaration()
 
 //typeSpecifier -> 'INT' | 'VOID'
 void 
-Parser::typeSpecifier()
+Parser::typeSpecifier ()
 {
     if (m_tokens[m_index].type == INT)
     {
-        match("typeSpecifier", INT);
+        match ("typeSpecifier", INT);
     }
     else if (m_tokens[m_index].type == VOID)
     {
-        match("typeSpecifier", VOID);
+        match ("typeSpecifier", VOID);
     }
     else
     {
@@ -114,28 +115,28 @@ Parser::typeSpecifier()
 
 //funDeclaration -> typeSpecifier ID '(' params ')' compountStmt
 void
-Parser::funDeclaration()
+Parser::funDeclaration ()
 {
-    typeSpecifier();
-    match("funDeclaration", ID);
-    match("funDeclaration", LPAREN);
-    params();
-    match("funDeclaration", RPAREN);
-    compoundStmt();
+    typeSpecifier ();
+    match ("funDeclaration", ID);
+    match ("funDeclaration", LPAREN);
+    params ();
+    match ("funDeclaration", RPAREN);
+    compoundStmt ();
 
 }
 
 //params -> paramList | 'VOID'
 void
-Parser::params()
+Parser::params ()
 {
     if ((m_tokens[m_index].type == INT) | (m_tokens[m_index + 1].type == ID))
     {
-        paramList();
+        paramList ();
     }
     else if ((m_tokens[m_index].type == VOID) && (m_tokens[m_index + 1].type == RPAREN))
     {
-        match("params", VOID);
+        match ("params", VOID);
     }
     else
     {
@@ -145,13 +146,13 @@ Parser::params()
 
 //paramList -> param { ',' param}
 void
-Parser::paramList()
+Parser::paramList ()
 {
-    param();
-    while(m_tokens[m_index].type == COMMA)
+    param ();
+    while (m_tokens[m_index].type == COMMA)
     {
-        match("paramList", COMMA);
-        param();
+        match ("paramList", COMMA);
+        param ();
     }
 }
 
@@ -171,7 +172,7 @@ Parser::param()
 
 //compoundList -> '{' localDeclarations stmtList '}'
 void
-Parser::compoundStmt()
+Parser::compoundStmt ()
 {
     match("compoundStmt", LBRACE);
     localDeclarations();
@@ -182,49 +183,49 @@ Parser::compoundStmt()
 
 //localDeclarations -> {varDeclaration}
 void
-Parser::localDeclarations()
+Parser::localDeclarations ()
 {
     while((m_tokens[m_index].type == INT) | (m_tokens[m_index].type == VOID))
     {
-        varDeclaration();
+        varDeclaration ();
     }
 }
 
 // stmtList -> {stmt}
 void
-Parser::stmtList()
+Parser::stmtList ()
 {
     while((m_tokens[m_index].type == ID) | (m_tokens[m_index].type == SEMI) |
             (m_tokens[m_index].type == LBRACE) | (m_tokens[m_index].type == IF) |
             (m_tokens[m_index].type == WHILE) | (m_tokens[m_index].type == RETURN))
     {
-        stmt();
+        stmt ();
     }
 }
 
 //stmt -> expressionStmt | compoundStmt | selectionStmt | iterationStmt | returnStmt
 void
-Parser::stmt()
+Parser::stmt ()
 {
     if ((m_tokens[m_index].type == ID) | (m_tokens[m_index].type == SEMI))
     {
-        expressionStmt();
+        expressionStmt ();
     }
     else if (m_tokens[m_index].type == LBRACE)
     {
-        compoundStmt();
+        compoundStmt ();
     }
     else if (m_tokens[m_index].type == IF)
     {
-        selectionStmt();
+        selectionStmt ();
     }
     else if (m_tokens[m_index].type == WHILE)
     {
-        iterationStmt();
+        iterationStmt ();
     }
     else if (m_tokens[m_index].type == RETURN)
     {
-        returnStmt();
+        returnStmt ();
     }
     else
     {
@@ -235,131 +236,131 @@ Parser::stmt()
 
 // expresionStmt -> [expr] ';'
 void
-Parser::expressionStmt()
+Parser::expressionStmt ()
 {
     if ((m_tokens[m_index].type == ID) | (m_tokens[m_index].type == LPAREN) | (m_tokens[m_index].type == NUM))
     {
-        expr();
+        expr ();
     }
-    match("expressionStmt", SEMI);
+    match ("expressionStmt", SEMI);
 
 }
 
 //selectionStmt -> 'IF' '(' expr ')' stmt [ 'ELSE' stmt ]
 void
-Parser::selectionStmt()
+Parser::selectionStmt ()
 {
-    match("selectionStmt", IF);
-    match("selectionStmt", LPAREN);
-    expr();
-    match("selectionStmt", RPAREN);
-    stmt();
-    if(m_tokens[m_index].type == ELSE)
+    match ("selectionStmt", IF);
+    match ("selectionStmt", LPAREN);
+    expr ();
+    match ("selectionStmt", RPAREN);
+    stmt ();
+    if (m_tokens[m_index].type == ELSE)
     {
-        match("selectionStmt", ELSE);
-        stmt();
+        match ("selectionStmt", ELSE);
+        stmt ();
     }
 
 }
 
 //iterationStmt -> 'WHILE' '(' expr ')' stmt
 void
-Parser::iterationStmt()
+Parser::iterationStmt ()
 {
-    match("iterationStmt", WHILE);
-    match("iterationStmt", LPAREN);
-    expr();
-    match("iterationStmt", RPAREN);
-    stmt();
+    match ("iterationStmt", WHILE);
+    match ("iterationStmt", LPAREN);
+    expr ();
+    match ("iterationStmt", RPAREN);
+    stmt ();
 
 }
 
 //returnStmt -> 'RETURN' [expr] ';'
 void
-Parser::returnStmt()
+Parser::returnStmt ()
 {
-    match("returnStmt", RETURN);
+    match ("returnStmt", RETURN);
     if ((m_tokens[m_index].type == ID) | (m_tokens[m_index].type == LPAREN) | (m_tokens[m_index].type == NUM))
     {
-        expr();
+        expr ();
     }
-    match("returnStmt", SEMI);
+    match ("returnStmt", SEMI);
 
 }
 
 //expr -> var '=' expr | simpleExpr
 void
-Parser::expr()
+Parser::expr ()
 {
     if (m_tokens[m_index + 1].type == ASSIGN)
     {
-        var();
-        match("expr", ASSIGN);
-        expr();
+        var ();
+        match ("expr", ASSIGN);
+        expr ();
     }
     else
     {
-        simpleExpr();
+        simpleExpr ();
     }
 
 }
 
 //var -> ID [ '[' expr ']' ]
 void
-Parser::var()
+Parser::var ()
 {
-    match("var", ID);
+    match ("var", ID);
     if (m_tokens[m_index].type == LBRACK)
     {
-        match("var", LBRACK);
-        expr();
-        match("var", RBRACK);
+        match ("var", LBRACK);
+        expr ();
+        match ("var", RBRACK);
     }
 
 }
 
 //simpleExpr -> additiveExpr {relop additiveExpr}
 void
-Parser::simpleExpr()
+Parser::simpleExpr ()
 {
-    additiveExpr();
+    additiveExpr ();
     if ((m_tokens[m_index].type == LT) | (m_tokens[m_index].type == LTE) |
         (m_tokens[m_index].type == GT) | (m_tokens[m_index].type == GTE) |
         (m_tokens[m_index].type == EQ) | (m_tokens[m_index].type == NEQ))
     {
-        relop();
-        additiveExpr();
+        relop ();
+        additiveExpr ();
     }
 
 }
 
 //relop -> '<=' | '<' | '>' | '>=' | '==' |'!='
 void
-Parser::relop()
+Parser::relop ()
 {
     if (m_tokens[m_index].type == LT)
     {
-        match("additiveExpr", LT);
+        match ("additiveExpr", LT);
     }
     else if (m_tokens[m_index].type == LTE)
     {
-        match("additiveExpr", LTE);
+        match ("additiveExpr", LTE);
     }
     else if (m_tokens[m_index].type == GT)
     {
-        match("additiveExpr", GT);
+        match ("additiveExpr", GT);
     }
     else if (m_tokens[m_index].type == GTE)
     {
-        match("additiveExpr", GTE);
+        match ("additiveExpr", GTE);
     }
     else if (m_tokens[m_index].type == EQ)
     {
-        match("additiveExpr", EQ);
+        match ("additiveExpr", EQ);
     }
     else if (m_tokens[m_index].type == NEQ)
     {
-        match("additiveExpr", NEQ);
+        match ("additiveExpr", NEQ);
     }
     else
     {
@@ -369,28 +370,28 @@ Parser::relop()
 
 //additiveExpr -> term {addop term}
 void
-Parser::additiveExpr()
+Parser::additiveExpr ()
 {
-    term();
+    term ();
     if ((m_tokens[m_index].type == PLUS) | (m_tokens[m_index].type == MINUS))
     {
-        addop();
-        term();
+        addop ();
+        term ();
     }
 
 }
 
 //addop -> '+' | '-'
 void
-Parser::addop()
+Parser::addop ()
 {
     if (m_tokens[m_index].type == PLUS)
     {
-        match("addop", PLUS);
+        match ("addop", PLUS);
     }
     else if (m_tokens[m_index].type == MINUS)
     {
-        match("addop", MINUS);
+        match ("addop", MINUS);
     }
     else 
     {
@@ -401,28 +402,28 @@ Parser::addop()
 
 //term -> factor {mulop factor}
 void
-Parser::term()
+Parser::term ()
 {
-    factor();
+    factor ();
     if ((m_tokens[m_index].type == TIMES) | (m_tokens[m_index].type == DIVIDE))
     {
-        mulop();
-        factor();
+        mulop ();
+        factor ();
     }
 
 }
 
 //mulop -> '*' | '/'
 void
-Parser::mulop()
+Parser::mulop ()
 {
     if (m_tokens[m_index].type == TIMES)
     {
-        match("mulop", TIMES);
+        match ("mulop", TIMES);
     }
     else if (m_tokens[m_index].type == MINUS)
     {
-        match("mulop", MINUS);
+        match ("mulop", MINUS);
     }
     else
     {
@@ -432,58 +433,58 @@ Parser::mulop()
 
 //factor -> '(' expr ')' | var | call | NUM
 void
-Parser::factor()
+Parser::factor ()
 {
     if (m_tokens[m_index].type == LPAREN)
     {
-        match("factor", LPAREN);
-        expr();
-        match("factor", RPAREN);
+        match ("factor", LPAREN);
+        expr ();
+        match ("factor", RPAREN);
     }
     else if ((m_tokens[m_index].type == ID) && (m_tokens[m_index + 1].type == LPAREN))
     {
-        call();
+        call ();
     }
     else if (m_tokens[m_index].type == ID)
     {
-        var();
+        var ();
     }
     else if (m_tokens[m_index].type == NUM)
     {
-        match("factor", NUM);
+        match ("factor", NUM);
     }
 }
 
 //call -> ID '(' args ')'
 void
-Parser::call()
+Parser::call ()
 {
-    match("call", ID);
-    match("call", LPAREN);
-    args();
-    match("call", RPAREN);
+    match ("call", ID);
+    match ("call", LPAREN);
+    args ();
+    match ("call", RPAREN);
 }
 
 //args -> [argList]
 void
-Parser::args()
+Parser::args ()
 {
     if ((m_tokens[m_index].type == ID) | (m_tokens[m_index].type == LPAREN) | (m_tokens[m_index].type == NUM))
     {
-        argList();
+        argList ();
     }
 
 }
 
 //argList -> expr { ',' expr }
 void
-Parser::argList()
+Parser::argList ()
 {
-    expr();
+    expr ();
     while (m_tokens[m_index].type == COMMA)
     {
-        match("argList", COMMA);
-        expr();
+        match ("argList", COMMA);
+        expr ();
     }
 
 }
