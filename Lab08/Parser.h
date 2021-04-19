@@ -10,10 +10,11 @@ class Parser
 {
     public :
         Parser (std::vector<Token> tokenVector);
+
         ~Parser ();
 
         void
-        match ();
+        match (const string& function, string expectedType);
 
         void
         error ();
@@ -46,7 +47,7 @@ class Parser
         param();
 
         void
-        compoundList();
+        compoundStmt();
 
         void
         localDeclarations();
