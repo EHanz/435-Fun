@@ -40,8 +40,8 @@ main (int argc, char* argv[])
     }
     Lexer lex(srcFile);
 
-    printf("TOKEN\t\tLEXEME\t\tVALUE\n");
-    printf("=====\t\t======\t\t=====\n");
+    //printf("TOKEN\t\tLEXEME\t\tVALUE\n");
+    //printf("=====\t\t======\t\t=====\n");
 
     std::string tokens[29] = {"EOF", "ERROR", "IF", "ELSE", "INT", "VOID", "RETURN", "WHILE", "PLUS",
         "MINUS", "TIMES", "DIVIDE", "LT", "LTE", "GT", "GTE", "EQ", "NEQ", "ASSIGN", "SEMI",
@@ -50,6 +50,7 @@ main (int argc, char* argv[])
     std::vector<Token> tokenVector = lex.tokenize();
 
     Parser pars(tokenVector);
+    pars.program();
     /*
     Token result;
     int token;

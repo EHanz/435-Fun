@@ -33,6 +33,19 @@ Parser::error (const std::string& function, TokenType expectedType)
     exit (1);
 }
 
+void
+Parser::start()
+{
+    program();
+    if (m_tokens[m_index].type != END_OF_FILE)
+    {
+        error("program", END_OF_FILE);
+    }
+    else
+    {
+        printf("Valid!\n");
+    }
+}
 //program -> declarationList
 void
 Parser::program ()

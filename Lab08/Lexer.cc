@@ -76,6 +76,7 @@ Lexer::tokenize ()
         tokenVector[tokenIndex] = getToken ();
         tokenIndex++;
     }
+    return tokenVector;
 }
 
 Token
@@ -91,31 +92,31 @@ Lexer::lexId ()
     ungetChar (c);
     if (!id.compare ("if"))
     {
-        return Token (IF, "if");
+        return Token (IF, "if", 0, m_lineNum, m_columnNum);
     }
     else if (!id.compare ("else"))
     {
-        return Token (ELSE, "else"); 
+        return Token (ELSE, "else", 0, m_lineNum, m_columnNum); 
     }
     else if (!id.compare ("int"))
     {
-        return Token (INT, "int"); 
+        return Token (INT, "int", 0, m_lineNum, m_columnNum); 
     }
     else if (!id.compare ("void"))
     {
-        return Token (VOID, "void"); 
+        return Token (VOID, "void", 0, m_lineNum, m_columnNum); 
     }
     else if (!id.compare ("return"))
     {
-        return Token (RETURN, "return"); 
+        return Token (RETURN, "return", 0, m_lineNum, m_columnNum); 
     }
     else if (!id.compare("while"))
     {
-        return Token (WHILE, "while"); 
+        return Token (WHILE, "while", 0, m_lineNum, m_columnNum); 
     }
     else
     {
-        return Token (ID, id);
+        return Token (ID, id, 0, m_lineNum, m_columnNum);
     }
 }
 
@@ -131,7 +132,7 @@ Lexer::lexNum ()
     }
     ungetChar (c);
     int intNum = stoi (strNum);
-    return Token (NUM, strNum, intNum);
+    return Token (NUM, strNum, intNum, m_lineNum, m_columnNum);
     //similar to lexId but change the string to int
 }
 
@@ -169,7 +170,7 @@ Lexer::getToken ()
 
             //Operators
             case '+':
-                return Token (PLUS, "+");
+                return Token (PLUS, "+", 0, m_lineNum, m_columnNum);
             /*if (c != '+')
             {
                 ungetChar(c);
@@ -177,10 +178,10 @@ Lexer::getToken ()
             }
             return Token (INCREMENT, "++");*/
             case '-':
-                return Token (MINUS, "-");
+                return Token (MINUS, "-", 0, m_lineNum, m_columnNum);
 
             case '*':
-                return Token (TIMES, "*");
+                return Token (TIMES, "*", 0, m_lineNum, m_columnNum);
 
             case '/':
                 c = getChar();
@@ -202,7 +203,7 @@ Lexer::getToken ()
                 else
                 {
                     ungetChar (c);
-                    return Token (DIVIDE, "/");
+                    return Token (DIVIDE, "/", 0, m_lineNum, m_columnNum);
                 }
 
             case '<':
@@ -210,66 +211,66 @@ Lexer::getToken ()
                 if (c != '=')
                 {
                     ungetChar (c);
-                    return Token (LT, "<");
+                    return Token (LT, "<", 0, m_lineNum, m_columnNum);
                 }
-                return Token (LTE, "<=");
+                return Token (LTE, "<=", 0, m_lineNum, m_columnNum);
 
             case '>':
                 c = getChar ();
                 if (c != '=')
                 {
                     ungetChar (c);
-                    return Token (GT, ">");
+                    return Token (GT, ">", 0, m_lineNum, m_columnNum);
                 }
-                return Token (GTE, ">=");
+                return Token (GTE, ">=", 0, m_lineNum, m_columnNum);
 
             case '=':
                 c = getChar ();
                 if (c != '=')
                 {
                     ungetChar (c);
-                    return Token (ASSIGN, "=");
+                    return Token (ASSIGN, "=", 0, m_lineNum, m_columnNum);
                 }
-                return Token (EQ, "==");
+                return Token (EQ, "==", 0, m_lineNum, m_columnNum);
             
             case '!':
                 c = getChar ();
                 if (c != '=')
                 {
                     ungetChar (c);
-                    return Token (ERROR, "!");
+                    return Token (ERROR, "!", 0, m_lineNum, m_columnNum);
                 }
-                return Token (NEQ, "!=");
+                return Token (NEQ, "!=", 0, m_lineNum, m_columnNum);
 
             //Puncuators
             case ';':
-                return Token (SEMI, ";");
+                return Token (SEMI, ";", 0, m_lineNum, m_columnNum);
             
             case ',':
-                return Token (COMMA, ",");
+                return Token (COMMA, ",", 0, m_lineNum, m_columnNum);
 
             case '(':
-                return Token (LPAREN, "(");
+                return Token (LPAREN, "(", 0, m_lineNum, m_columnNum);
 
             case ')':
-                return Token (RPAREN, ")");
+                return Token (RPAREN, ")", 0, m_lineNum, m_columnNum);
 
             case '[':
-                return Token (LBRACK, "[");
+                return Token (LBRACK, "[", 0, m_lineNum, m_columnNum);
             
             case ']':
-                return Token (RBRACK, "]");
+                return Token (RBRACK, "]", 0, m_lineNum, m_columnNum);
 
             case '{':
-                return Token (LBRACE, "{");
+                return Token (LBRACE, "{", 0, m_lineNum, m_columnNum);
 
             case '}':
-                return Token (RBRACE, "}");
+                return Token (RBRACE, "}", 0, m_lineNum, m_columnNum);
 
             default:
                 std::string err;
                 err.push_back (c);
-                return Token (ERROR, err);
+                return Token (ERROR, err, 0, m_lineNum, m_columnNum);
         }
     //}
 }

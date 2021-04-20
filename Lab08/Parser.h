@@ -22,6 +22,9 @@ class Parser
         error (const std::string& function, TokenType expectedType);
 
         void
+        start();
+        
+        void
         program();
 
         void
