@@ -20,16 +20,17 @@ Parser::match (const std::string& function, TokenType expectedType)
     }
     else
     {
-        //error
+        error (function, expectedType);
     }
 
 }
 
 void
-Parser::error (const std::string function, TokenType expectedType)
+Parser::error (const std::string& function, TokenType expectedType)
 {
-    printf ("");
-    printf ("");
+    printf ("\n Error in: \"%s\" %d\n", function.c_str (), lex.getLineNum ());
+    printf ("\t expected '%s' but got '%c'.\n", expectedType, m_tokens[m_index]);
+    exit (1);
 }
 
 //program -> declarationList
@@ -47,7 +48,7 @@ void
 Parser::declarationList ()
 {
     declaration ();
-    while((m_tokens[m_index].type == INT) | (m_tokens[m_index].type == VOID))
+    while ((m_tokens[m_index].type == INT) | (m_tokens[m_index].type == VOID))
     {
         declaration ();
     }
@@ -68,7 +69,7 @@ Parser::declaration ()
     }
     else
     {
-        //error
+        //error ();
     }
 
 }

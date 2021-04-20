@@ -19,7 +19,7 @@ class Parser
         match (const std::string& function, TokenType expectedType);
 
         void
-        error (const std::string function, TokenType expectedType);
+        error (const std::string& function, TokenType expectedType);
 
         void
         program();
@@ -111,6 +111,7 @@ class Parser
     public:
         std::vector<Token> m_tokens;
         int m_index;
+        Lexer lex;
 };
 
 #endif
