@@ -28,8 +28,8 @@ Parser::match (const std::string& function, TokenType expectedType)
 void
 Parser::error (const std::string& function, TokenType expectedType)
 {
-    printf ("\n Error in: \"%s\" %d\n", function.c_str (), lex.getLineNum ());
-    printf ("\t expected '%s' but got '%c'.\n", expectedType, m_tokens[m_index]);
+    printf ("\n Error in: \"%s\" %d\n", function.c_str (), m_tokens[m_index].line);
+    printf ("\t expected '%u' but got '%u'.\n", expectedType, m_tokens[m_index].type);
     exit (1);
 }
 

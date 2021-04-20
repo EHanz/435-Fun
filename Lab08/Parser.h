@@ -111,7 +111,6 @@ class Parser
     public:
         std::vector<Token> m_tokens;
         int m_index;
-        Lexer lex;
 };
 
 #endif
