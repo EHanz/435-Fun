@@ -71,11 +71,19 @@ Lexer::tokenize ()
 {
     std::vector<Token> tokenVector;
     int tokenIndex = 0;
+    Token token;
     while (true)
     {
-        tokenVector[tokenIndex] = getToken ();
+        token = getToken();
+        if (token.type == END_OF_FILE)
+        {
+            tokenVector[tokenIndex] = token;
+            break;
+        }
+        tokenVector[tokenIndex] = token;
         tokenIndex++;
     }
+
     return tokenVector;
 }
 

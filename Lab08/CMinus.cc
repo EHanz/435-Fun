@@ -15,6 +15,9 @@
 #include "Lexer.h"
 #include "Parser.h"
 
+using std::cout;
+using std::endl;
+
 //extern FILE* yyin;
 //extern char* yytext;
 //extern int columnNum;
@@ -43,14 +46,15 @@ main (int argc, char* argv[])
     //printf("TOKEN\t\tLEXEME\t\tVALUE\n");
     //printf("=====\t\t======\t\t=====\n");
 
-    std::string tokens[29] = {"EOF", "ERROR", "IF", "ELSE", "INT", "VOID", "RETURN", "WHILE", "PLUS",
-        "MINUS", "TIMES", "DIVIDE", "LT", "LTE", "GT", "GTE", "EQ", "NEQ", "ASSIGN", "SEMI",
-        "COMMA", "LPAREN", "RPAREN", "LBRACK", "RBRACK", "LBRACE", "RBRACE", "ID", "NUM"};
+    //std::string tokens[29] = {"EOF", "ERROR", "IF", "ELSE", "INT", "VOID", "RETURN", "WHILE", "PLUS",
+        //"MINUS", "TIMES", "DIVIDE", "LT", "LTE", "GT", "GTE", "EQ", "NEQ", "ASSIGN", "SEMI",
+       // "COMMA", "LPAREN", "RPAREN", "LBRACK", "RBRACK", "LBRACE", "RBRACE", "ID", "NUM"};
 
-    std::vector<Token> tokenVector = lex.tokenize();
-
+    std::vector<Token> tokenVector;
+    tokenVector = lex.tokenize();
+    
     Parser pars(tokenVector);
-    pars.program();
+    pars.start();
     /*
     Token result;
     int token;
