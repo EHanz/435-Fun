@@ -1,8 +1,8 @@
 /*
     Filename    : Lexer.cc
-    Author      : Lauren Deaver
+    Author      : Lauren Deaver/Evan Hanzelman
     Course      : CSCI 435
-    Assignment  : Lab 5 - Lexing with Class
+    Assignment  : Lab 8 - CMinus Lexer
 */
 
 /***********************/
@@ -77,10 +77,10 @@ Lexer::tokenize ()
         token = getToken();
         if (token.type == END_OF_FILE)
         {
-            tokenVector[tokenIndex] = token;
+            tokenVector.push_back(token);
             break;
         }
-        tokenVector[tokenIndex] = token;
+        tokenVector.push_back(token);
         tokenIndex++;
     }
 

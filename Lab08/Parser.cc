@@ -1,3 +1,9 @@
+/*
+    Filename    : Parser.cc
+    Author      : Lauren Deaver/evanHanzelman
+    Course      : CSCI 435
+    Assignment  : Lab 8 - CMinus Parser
+*/
 #include "Parser.h"
 
 Parser::Parser (std::vector<Token> tokenVector)
@@ -33,6 +39,7 @@ Parser::error (const std::string& function, TokenType expectedType)
     exit (1);
 }
 
+//start -> program | "valid" | error
 void
 Parser::start()
 {

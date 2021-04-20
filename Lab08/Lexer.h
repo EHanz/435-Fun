@@ -2,7 +2,7 @@
     Filename    : Lexer.h
     Author      : Lauren Deaver
     Course      : CSCI 435
-    Assignment  : Assignment 5 - Lexing with Class
+    Assignment  : Lab 8 - CMinus Parser
 */
 
 /***********************/

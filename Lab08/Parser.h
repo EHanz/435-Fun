@@ -1,3 +1,9 @@
+/*
+    Filename    : Parser.h
+    Author      : Lauren Deaver/Evan Hanzelman
+    Course      : CSCI 435
+    Assignment  : Lab 8 - CMinus Parser
+*/
 #ifndef PARSER_H
 #define PARSER_H
 
@@ -23,7 +29,7 @@ class Parser
 
         void
         start();
-        
+
         void
         program();
 
