@@ -2,7 +2,7 @@
     Filename    : Lexer.cc
     Author      : Lauren Deaver/Evan Hanzelman
     Course      : CSCI 435
-    Assignment  : Lab 8 - CMinus Lexer
+    Assignment  : Lab 8 - CMinus Parser
 */
 
 /***********************/
@@ -70,21 +70,14 @@ std::vector <Token>
 Lexer::tokenize ()
 {
     std::vector<Token> tokenVector;
-    int tokenIndex = 0;
-    Token token;
     while (true)
     {
-        token = getToken();
-        if (token.type == END_OF_FILE)
-        {
-            tokenVector.push_back(token);
-            break;
-        }
-        tokenVector.push_back(token);
-        tokenIndex++;
+		tokenVector.push_back(getToken());
+        if (tokenVector.back().type == END_OF_FILE)
+	    {
+            return tokenVector;
+	    }
     }
-
-    return tokenVector;
 }
 
 Token
@@ -147,8 +140,8 @@ Lexer::lexNum ()
 Token
 Lexer::getToken ()
 {
-    //while (true)
-    //{
+    while (true)
+    {
         char c = getChar ();
         if (isalpha (c))
         {
@@ -165,13 +158,10 @@ Lexer::getToken ()
             case '\n':
                 ++m_lineNum;
                 m_columnNum = 1;
-                break;
-            
             case ' ':
-                break;
-            
             case '\t':
-                break;
+                // try to consume again
+                break; 
 
             case EOF:
                 return Token (END_OF_FILE);
@@ -198,7 +188,12 @@ Lexer::getToken ()
                     while (true)
                     {
                         c = getChar ();
-                        if (c == '*')
+                        if (c == '\n')
+                        {
+                            ++m_lineNum;
+                            m_columnNum = 0; // why 0?
+                        }
+                        else if (c == '*')
                         {
                             c = getChar ();
                             if (c == '/')
@@ -213,7 +208,7 @@ Lexer::getToken ()
                     ungetChar (c);
                     return Token (DIVIDE, "/", 0, m_lineNum, m_columnNum);
                 }
-
+                break;
             case '<':
                 c = getChar ();
                 if (c != '=')
@@ -279,7 +274,8 @@ Lexer::getToken ()
                 std::string err;
                 err.push_back (c);
                 return Token (ERROR, err, 0, m_lineNum, m_columnNum);
-        }
-    //}
+        } // switch
+    } // while
 }
+
 

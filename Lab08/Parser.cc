@@ -1,10 +1,13 @@
 /*
     Filename    : Parser.cc
-    Author      : Lauren Deaver/evanHanzelman
+    Author      : Lauren Deaver/Evan Hanzelman
     Course      : CSCI 435
     Assignment  : Lab 8 - CMinus Parser
 */
+
+
 #include "Parser.h"
+#include "Lexer.h"
 
 Parser::Parser (std::vector<Token> tokenVector)
 {
@@ -34,12 +37,12 @@ Parser::match (const std::string& function, TokenType expectedType)
 void
 Parser::error (const std::string& function, TokenType expectedType)
 {
-    printf ("\n Error in: \"%s\" %d\n", function.c_str (), m_tokens[m_index].line);
-    printf ("\t expected '%u' but got '%u'.\n", expectedType, m_tokens[m_index].type);
+    printf ("\n Error while parsing: \'%s\'\n", function.c_str ());
+    printf ("\tEncountered: %s (line %d, column %d)\n", m_tokens[m_index].lexeme.c_str(), m_tokens[m_index].line, m_tokens[m_index].column);
+    printf ("\t Expected :%u\n", expectedType);
     exit (1);
 }
 
-//start -> program | "valid" | error
 void
 Parser::start()
 {
@@ -57,10 +60,11 @@ Parser::start()
 void
 Parser::program ()
 {
-    while (m_tokens[m_index].type != END_OF_FILE)
+    if (m_tokens[m_index].type == END_OF_FILE)
     {
-        declarationList ();
+        error("program", INT);
     }
+    declarationList ();
 }
 
 //declarationList -> declaration {declaration}
@@ -68,7 +72,7 @@ void
 Parser::declarationList ()
 {
     declaration ();
-    while ((m_tokens[m_index].type == INT) | (m_tokens[m_index].type == VOID))
+    while (m_tokens[m_index].type != END_OF_FILE)
     {
         declaration ();
     }
@@ -107,12 +111,7 @@ Parser::varDeclaration ()
         match ("varDeclaration", NUM);
         match ("varDeclaration", RBRACK);
     }
-    else
-    {
-        match ("varDeclaration", SEMI);
-    }
-
-
+    match ("varDeclaration", SEMI);
 }
 
 //typeSpecifier -> 'INT' | 'VOID'
@@ -151,11 +150,11 @@ Parser::funDeclaration ()
 void
 Parser::params ()
 {
-    if ((m_tokens[m_index].type == INT) | (m_tokens[m_index + 1].type == ID))
+    if ((m_tokens[m_index].type == INT) && (m_tokens[m_index + 1].type == ID))
     {
         paramList ();
     }
-    else if ((m_tokens[m_index].type == VOID) && (m_tokens[m_index + 1].type == RPAREN))
+    else if (m_tokens[m_index].type == VOID)
     {
         match ("params", VOID);
     }
@@ -206,7 +205,7 @@ Parser::compoundStmt ()
 void
 Parser::localDeclarations ()
 {
-    while((m_tokens[m_index].type == INT) | (m_tokens[m_index].type == VOID))
+    while((m_tokens[m_index].type == INT) || (m_tokens[m_index].type == VOID))
     {
         varDeclaration ();
     }
@@ -216,9 +215,9 @@ Parser::localDeclarations ()
 void
 Parser::stmtList ()
 {
-    while((m_tokens[m_index].type == ID) | (m_tokens[m_index].type == SEMI) |
-            (m_tokens[m_index].type == LBRACE) | (m_tokens[m_index].type == IF) |
-            (m_tokens[m_index].type == WHILE) | (m_tokens[m_index].type == RETURN))
+    while((m_tokens[m_index].type == ID) || (m_tokens[m_index].type == SEMI) ||
+            (m_tokens[m_index].type == LBRACE) || (m_tokens[m_index].type == IF) ||
+            (m_tokens[m_index].type == WHILE) || (m_tokens[m_index].type == RETURN))
     {
         stmt ();
     }
@@ -228,7 +227,7 @@ Parser::stmtList ()
 void
 Parser::stmt ()
 {
-    if ((m_tokens[m_index].type == ID) | (m_tokens[m_index].type == SEMI))
+    if ((m_tokens[m_index].type == ID) || (m_tokens[m_index].type == SEMI))
     {
         expressionStmt ();
     }
@@ -259,7 +258,7 @@ Parser::stmt ()
 void
 Parser::expressionStmt ()
 {
-    if ((m_tokens[m_index].type == ID) | (m_tokens[m_index].type == LPAREN) | (m_tokens[m_index].type == NUM))
+    if ((m_tokens[m_index].type == ID) || (m_tokens[m_index].type == LPAREN) || (m_tokens[m_index].type == NUM))
     {
         expr ();
     }
@@ -301,7 +300,7 @@ void
 Parser::returnStmt ()
 {
     match ("returnStmt", RETURN);
-    if ((m_tokens[m_index].type == ID) | (m_tokens[m_index].type == LPAREN) | (m_tokens[m_index].type == NUM))
+    if ((m_tokens[m_index].type == ID) || (m_tokens[m_index].type == LPAREN) | (m_tokens[m_index].type == NUM))
     {
         expr ();
     }
@@ -309,21 +308,23 @@ Parser::returnStmt ()
 
 }
 
+//expr -> {var '='} simpleExpr
 //expr -> var '=' expr | simpleExpr
 void
 Parser::expr ()
 {
-    if (m_tokens[m_index + 1].type == ASSIGN)
-    {
-        var ();
-        match ("expr", ASSIGN);
-        expr ();
+    while (m_tokens[m_index].type == ID) {
+        int saved = m_index;
+        var();
+        // lookahead said there isn't an assign -- must be simpleExpr
+        if (m_tokens[m_index].type != ASSIGN) {
+            m_index = saved;
+            break;
+        }
+        match("expr", ASSIGN);
     }
-    else
-    {
-        simpleExpr ();
-    }
-
+    // doesn't start with ID -- must be a simpleExpr
+    simpleExpr();
 }
 
 //var -> ID [ '[' expr ']' ]
@@ -345,9 +346,9 @@ void
 Parser::simpleExpr ()
 {
     additiveExpr ();
-    if ((m_tokens[m_index].type == LT) | (m_tokens[m_index].type == LTE) |
-        (m_tokens[m_index].type == GT) | (m_tokens[m_index].type == GTE) |
-        (m_tokens[m_index].type == EQ) | (m_tokens[m_index].type == NEQ))
+    while ((m_tokens[m_index].type == LT) || (m_tokens[m_index].type == LTE) ||
+        (m_tokens[m_index].type == GT) || (m_tokens[m_index].type == GTE) ||
+        (m_tokens[m_index].type == EQ) || (m_tokens[m_index].type == NEQ))
     {
         relop ();
         additiveExpr ();
@@ -359,33 +360,17 @@ Parser::simpleExpr ()
 void
 Parser::relop ()
 {
-    if (m_tokens[m_index].type == LT)
-    {
-        match ("additiveExpr", LT);
-    }
-    else if (m_tokens[m_index].type == LTE)
-    {
-        match ("additiveExpr", LTE);
-    }
-    else if (m_tokens[m_index].type == GT)
-    {
-        match ("additiveExpr", GT);
-    }
-    else if (m_tokens[m_index].type == GTE)
-    {
-        match ("additiveExpr", GTE);
-    }
-    else if (m_tokens[m_index].type == EQ)
-    {
-        match ("additiveExpr", EQ);
-    }
-    else if (m_tokens[m_index].type == NEQ)
-    {
-        match ("additiveExpr", NEQ);
-    }
-    else
-    {
-        //error
+    TokenType t = m_tokens[m_index].type;
+    switch (t) {
+        case LT:
+        case LTE:
+        case GT:
+        case GTE:
+        case EQ:
+        case NEQ:
+            match ("additiveExpr", t);
+        default:
+            ;
     }
 }
 
@@ -394,7 +379,7 @@ void
 Parser::additiveExpr ()
 {
     term ();
-    if ((m_tokens[m_index].type == PLUS) | (m_tokens[m_index].type == MINUS))
+    while ((m_tokens[m_index].type == PLUS) || (m_tokens[m_index].type == MINUS))
     {
         addop ();
         term ();
@@ -426,7 +411,7 @@ void
 Parser::term ()
 {
     factor ();
-    if ((m_tokens[m_index].type == TIMES) | (m_tokens[m_index].type == DIVIDE))
+    while ((m_tokens[m_index].type == TIMES) || (m_tokens[m_index].type == DIVIDE))
     {
         mulop ();
         factor ();
@@ -442,9 +427,9 @@ Parser::mulop ()
     {
         match ("mulop", TIMES);
     }
-    else if (m_tokens[m_index].type == MINUS)
+    else if (m_tokens[m_index].type == DIVIDE)
     {
-        match ("mulop", MINUS);
+        match ("mulop", DIVIDE);
     }
     else
     {
@@ -490,7 +475,7 @@ Parser::call ()
 void
 Parser::args ()
 {
-    if ((m_tokens[m_index].type == ID) | (m_tokens[m_index].type == LPAREN) | (m_tokens[m_index].type == NUM))
+    if ((m_tokens[m_index].type == ID) || (m_tokens[m_index].type == LPAREN) | (m_tokens[m_index].type == NUM))
     {
         argList ();
     }
